@@ -1,19 +1,16 @@
-Prostredi
----------
+## Prostředí
 
-Ubuntu 64bit
 Windows 64bit
 
-Autori
-------
+## Autoři
 
-Nazev tymu
-- xlogin01 jmeno prijmeni 
-- xlogin02 jmeno prijmeni 
-- xlogin03 jmeno prijmeni 
-- xlogin04 jmeno prijmeni 
+4boys1calculator
 
-Licence
--------
+- xkucha28 Josef Kuchař
+- xsirov00 Matej Sirovatka
+- xbenci01 Šimon Benčík
+- xnecka00 Šimon Neckař
 
-Tento program je poskytovan...
+## Licence
+
+Tento program je poskytován pod licencí GPLv3, celé znění v souboru LICENSE
