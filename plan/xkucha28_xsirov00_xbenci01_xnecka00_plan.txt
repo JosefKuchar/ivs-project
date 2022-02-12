@@ -1,0 +1,6 @@
+Tento soubor bude obsahovat:
+
+-- stanovené termíny,
+-- přidělení úkolů na projektu jednotlivým řešitelům,
+-- zvolené komunikační kanály pro komunikaci v týmu a stanovená pravidla pro komunikaci (jsou-li nějaká),
+-- zvolený systém pro správu verzí a hosting + informaci, jak do repozitáře mohou nahlédnout vyučující/cvičící (viz níže).
