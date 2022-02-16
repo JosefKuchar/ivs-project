@@ -11,6 +11,34 @@ pub fn add(a: Dec, b: Dec) -> Dec {
   unimplemented!()
 }
 
+pub fn subtract(a: Dec, b: Dec) -> Dec {
+  unimplemented!()
+}
+
+pub fn multiply(a: Dec, b: Dec) -> Dec {
+  unimplemented!()
+}
+
+pub fn divide(a: Dec, b: Dec) -> Option<Dec> {
+  unimplemented!()
+}
+
+pub fn pow(a: Dec, b: Dec) -> Option<Dec> {
+  unimplemented!()
+}
+
+pub fn root(a: Dec, b: Dec) -> Option<Dec> {
+  unimplemented!()
+}
+
+pub fn factorial(a: Dec) -> Option<Dec> {
+  unimplemented!()
+}
+
+pub fn abs(a: Dec) -> Dec {
+  unimplemented!()
+}
+
 #[cfg(test)]
 mod tests {
   use dec::*;
