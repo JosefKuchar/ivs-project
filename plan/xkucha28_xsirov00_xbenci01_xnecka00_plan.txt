@@ -4,3 +4,29 @@ Tento soubor bude obsahovat:
 -- přidělení úkolů na projektu jednotlivým řešitelům,
 -- zvolené komunikační kanály pro komunikaci v týmu a stanovená pravidla pro komunikaci (jsou-li nějaká),
 -- zvolený systém pro správu verzí a hosting + informaci, jak do repozitáře mohou nahlédnout vyučující/cvičící (viz níže).
+
+Stanovené termíny:
+
+Rozdělení úkolů
+  - Společné
+  - xkucha28 Josef Kuchař
+    - Organizace projektu
+    - Code review
+
+  - xsirov00 Matej Sirovatka
+
+
+  - xbenci01 Šimon Benčík
+  - xnecka00 Šimon Neckař
+
+Komunikační kanály, pravidla pro komunikaci
+  - Discord
+    - Primární kanál pro rychlou textovou komunikaci a hlasové meetingy
+    - Pro urgentnější zprávy používáme zmínky aby se danému člověku poslala notifikace
+  - Github issues
+    - Pro organizované diskutovaní případných problémů/nápadů s daným úkolem
+
+Systém pro správu verzí, hosting
+  - Git
+  - https://github.com/JosefKuchar/ivs-project
+  - Uživatel ivskontrola byl přidán pro kontrolu práce vyučujícími
