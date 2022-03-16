@@ -1,23 +1,49 @@
-Tento soubor bude obsahovat:
-
--- stanovené termíny,
--- přidělení úkolů na projektu jednotlivým řešitelům,
--- zvolené komunikační kanály pro komunikaci v týmu a stanovená pravidla pro komunikaci (jsou-li nějaká),
--- zvolený systém pro správu verzí a hosting + informaci, jak do repozitáře mohou nahlédnout vyučující/cvičící (viz níže).
-
 Stanovené termíny:
+  - 17. 03. 2022 Vytvoření plánu
+  - 24. 03. 2022 Testy pro matematickou knihovnu
+  - 31. 03. 2022 Makefile
+  - 31. 03. 2022 Matematická knihovna
+  - 07. 04. 2022 Frontend
+  - 07. 04. 2022 Middleware
+  - 07. 04. 2022 Profiling tool
+  - 14. 04. 2022 Instalačka
+  - 21. 04. 2022 Docs
+  - 28. 04. 2022 Mockup další verze
+  - 28. 04. 2022 Prezentace
+  - 28. 04. 2022 Finální review (skutecnost.txt)
+  - 28. 04. 2022 Finální deadline
+  - 20. 05. 2022 Problemy.txt soubor
 
 Rozdělení úkolů
   - Společné
+    - Plán
+    - Instalačka
+    - Dokumentace (primárně každý svojí část na které pracoval)
+    - Tvorba prezentace
+    - Finální zhodnocení
+    - Vytvoření problemy.txt (každý zvlášť)
+
   - xkucha28 Josef Kuchař
     - Organizace projektu
     - Code review
+    - Matematická knihovna (výpomoc)
+    - Frontend (výpomoc)
+    - Middleware (propojení Frontendu a Matematické knihovny)
 
   - xsirov00 Matej Sirovatka
-
+    - Makefile
+    - Matematická knihovna
+    - Middleware (propojení Frontendu a Matematické knihovny)
 
   - xbenci01 Šimon Benčík
+    - Návrh UI
+    - Mockup další verze
+    - Frontend
+
   - xnecka00 Šimon Neckař
+    - Testy matematické knihovny
+    - Profiling tool
+
 
 Komunikační kanály, pravidla pro komunikaci
   - Discord
