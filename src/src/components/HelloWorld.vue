@@ -7,7 +7,8 @@
 export default {
   data() {
     return {
-      count: 0
+      count: 0,
+      msg: ""
     }
   },
 
@@ -17,6 +18,8 @@ export default {
       invoke("test_operation", {
         event: "sum",
         payload: "69420"
+      }).then(result => {
+        this.msg = result
       });
       this.count++
     }
