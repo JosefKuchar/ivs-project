@@ -1,9 +1,27 @@
-<script setup lang="ts">
-import { ref } from 'vue'
+<script setup>
+  import { invoke } from '@tauri-apps/api/tauri'
+  import { ref } from 'vue'
+</script>
 
-defineProps<{ msg: string }>()
+<script>
+export default {
+  data() {
+    return {
+      count: 0
+    }
+  },
 
-const count = ref(0)
+  methods: {
+    increment() {
+      // Test invoke of API
+      invoke("test_operation", {
+        event: "sum",
+        payload: "69420"
+      });
+      this.count++
+    }
+  }
+}
 </script>
 
 <template>
@@ -26,7 +44,7 @@ const count = ref(0)
     <a href="https://v3.vuejs.org/" target="_blank">Vue 3 Docs</a>
   </p>
 
-  <button type="button" @click="count++">count is: {{ count }}</button>
+  <button type="button" @click="increment">count is: {{ count }}</button>
   <p>
     Edit
     <code>components/HelloWorld.vue</code> to test hot module replacement.
