@@ -143,7 +143,7 @@ mod tests {
 
   #[test]
   fn divide() {
-      should_panic! (
+      assert_eq! (
           super::divide(Decimal::from(-531), Decimal::(-15)),
           Decimal::from(35.4));
       );
