@@ -15,11 +15,18 @@ export default {
   methods: {
     increment() {
       // Test invoke of API
-      invoke("test_operation", {
+      invoke("math_operation", {
         event: "sum",
-        payload: "69420"
+        payload: {
+          a: "69420",
+          b: "560asdf",
+          operation: "sum"
+        }
+
       }).then(result => {
         this.msg = result
+      }).catch(error => {
+        this.msg = error
       });
       this.count++
     }
@@ -28,7 +35,7 @@ export default {
 </script>
 
 <template>
-  <h1>{{ msg }}</h1>
+  <h1>{{ msg}}</h1>
 
   <p>
     Recommended IDE setup:

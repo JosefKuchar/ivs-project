@@ -8,7 +8,7 @@ mod middleware;
 
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![middleware::test_operation,])
+    .invoke_handler(tauri::generate_handler![middleware::math_operation])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

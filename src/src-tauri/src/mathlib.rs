@@ -19,19 +19,19 @@ pub fn multiply(a: Dec, b: Dec) -> Dec {
   unimplemented!()
 }
 
-pub fn divide(a: Dec, b: Dec) -> Option<Dec> {
+pub fn divide(a: Dec, b: Dec) -> Result<Dec, String> {
   unimplemented!()
 }
 
-pub fn pow(a: Dec, b: Dec) -> Option<Dec> {
+pub fn pow(a: Dec, b: Dec) -> Result<Dec, String> {
   unimplemented!()
 }
 
-pub fn root(a: Dec, b: Dec) -> Option<Dec> {
+pub fn root(a: Dec, b: Dec) -> Result<Dec, String> {
   unimplemented!()
 }
 
-pub fn factorial(a: Dec) -> Option<Dec> {
+pub fn factorial(a: Dec) -> Result<Dec, String> {
   unimplemented!()
 }
 
