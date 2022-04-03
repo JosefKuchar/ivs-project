@@ -29,7 +29,7 @@ pub fn divide(a: Dec, b: Dec) -> Result<Dec, String> {
 
 pub fn pow(a: Dec, b: Dec) -> Result<Dec, String> {
   let mut ctx = Context::<Dec>::default();
-  if b.exponent() != 0 {
+  if b.exponent() != 0 || b < Decimal::from(1) {
     Err("Only natural exponents are supported!".to_string())
   } else {
     let mut mut_a = a.clone();
@@ -39,10 +39,12 @@ pub fn pow(a: Dec, b: Dec) -> Result<Dec, String> {
   }
 }
 
-pub fn root(a: Dec) -> Result<Dec, String> {
+pub fn root(a: Dec, b: Dec) -> Result<Dec, String> {
   let mut ctx = Context::<Dec>::default();
-  if a.is_negative() {
-    Err("Invalid base of square root!".to_string())
+  if b.exponent() != 0 || b.is_negative() || a.is_negative() {
+    Err("Only root of natural numbers is supported!".to_string())
+  } else if a.is_negative() && b % Dec::from(2) != Dec::from(1) {
+    Err("Only odd roots of negative values can be calculated!".to_string())
   } else {
     let mut mut_a = a.clone();
     ctx.sqrt(&mut mut_a);
