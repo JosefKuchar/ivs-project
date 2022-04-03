@@ -197,9 +197,7 @@ mod tests {
 
   #[test]
   fn divide_3() {
-    assert!(
-      super::divide(Decimal::from(-531), Decimal::from(0)).is_err()
-    );
+    assert!(super::divide(Decimal::from(-531), Decimal::from(0)).is_err());
   }
 
   #[test]
@@ -225,18 +223,15 @@ mod tests {
   }
   #[test]
   fn pow_3() {
-    assert!(super::pow(Decimal::from(0.4), Decimal::from(0.1).is_err()))
-    );
+    assert!(super::pow(Decimal::from(0.4), Decimal::from(0.1)).is_err());
   }
   #[test]
   fn pow_4() {
-    assert!(super::pow(Decimal::from(0.4), Decimal::from(-1).is_err()))
-    );
+    assert!(super::pow(Decimal::from(0.4), Decimal::from(-1)).is_err());
   }
   #[test]
   fn pow_5() {
-    assert!(super::pow(Decimal::from(0.4), Decimal::from(0).is_err()))
-    );
+    assert!(super::pow(Decimal::from(0.4), Decimal::from(0)).is_err());
   }
 
   #[test]
@@ -257,8 +252,7 @@ mod tests {
 
   #[test]
   fn root_3() {
-    assert!(super::root(Decimal::from(-4), Decimal::from(2)).is_err())
-    );
+    assert!(super::root(Decimal::from(-4), Decimal::from(2)).is_err());
   }
 
   #[test]
