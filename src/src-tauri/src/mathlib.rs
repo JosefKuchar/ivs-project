@@ -41,13 +41,22 @@ pub fn pow(a: Dec, b: Dec) -> Result<Dec, String> {
 
 pub fn root(a: Dec, b: Dec) -> Result<Dec, String> {
   let mut ctx = Context::<Dec>::default();
-  if b.exponent() != 0 || b.is_negative() || a.is_negative() {
+  ctx.set_min_exponent(-1);
+  ctx.set_max_exponent(1);
+  if b.exponent() != 0 || b.is_negative() {
     Err("Only root of natural numbers is supported!".to_string())
   } else if a.is_negative() && b % Dec::from(2) != Dec::from(1) {
     Err("Only odd roots of negative values can be calculated!".to_string())
   } else {
     let mut mut_a = a.clone();
-    ctx.sqrt(&mut mut_a);
+    let mut exponent = Dec::from(1) / b;
+    if a.is_negative() {
+      ctx.neg(&mut mut_a);
+    }
+    ctx.pow(&mut mut_a, &mut exponent);
+    if a.is_negative() {
+      ctx.neg(&mut mut_a);
+    }
     Ok(mut_a)
   }
 }
@@ -93,7 +102,7 @@ mod tests {
   fn add_3() {
     assert_eq!(
       super::add(Decimal::from(8453216), Decimal::from(5462132)),
-      Decimal::from(13905348)
+      Decimal::from(13915348)
     );
   }
 
@@ -124,7 +133,7 @@ mod tests {
   #[test]
   fn subtract_2() {
     assert_eq!(
-      super::add(Decimal::from(2), Decimal::from(0.3)),
+      super::subtract(Decimal::from(2), Decimal::from(0.3)),
       Decimal::from(1.7)
     );
   }
@@ -213,7 +222,7 @@ mod tests {
   fn divide_1() {
     assert_eq!(
       super::divide(Decimal::from(48), Decimal::from(0.0005)),
-      Decimal::from(240000)
+      Ok(Decimal::from(96000))
     );
   }
 
@@ -221,7 +230,7 @@ mod tests {
   fn divide_2() {
     assert_eq!(
       super::divide(Decimal::from(0), Decimal::from(6)),
-      Decimal::from(0)
+      Ok(Decimal::from(0))
     );
   }
 
@@ -234,31 +243,36 @@ mod tests {
   fn divide_4() {
     assert_eq!(
       super::divide(Decimal::from(-531), Decimal::from(-15)),
-      Decimal::from(35.4)
+      Ok(Decimal::from(35.4))
     );
   }
+  
   #[test]
   fn pow_1() {
     assert_eq!(
       super::pow(Decimal::from(-5), Decimal::from(4)),
-      Decimal::from(625)
+      Ok(Decimal::from(625))
     );
   }
+
   #[test]
   fn pow_2() {
     assert_eq!(
       super::pow(Decimal::from(-2.5), Decimal::from(3)),
-      Decimal::from(-15.625)
+      Ok(Decimal::from(-15.625))
     );
   }
+
   #[test]
   fn pow_3() {
     assert!(super::pow(Decimal::from(0.4), Decimal::from(0.1)).is_err());
   }
+
   #[test]
   fn pow_4() {
     assert!(super::pow(Decimal::from(0.4), Decimal::from(-1)).is_err());
   }
+
   #[test]
   fn pow_5() {
     assert!(super::pow(Decimal::from(0.4), Decimal::from(0)).is_err());
@@ -268,7 +282,7 @@ mod tests {
   fn root_1() {
     assert_eq!(
       super::root(Decimal::from(-8), Decimal::from(3)),
-      Decimal::from(-2)
+      Ok(Decimal::from(-2))
     );
   }
 
@@ -276,7 +290,7 @@ mod tests {
   fn root_2() {
     assert_eq!(
       super::root(Decimal::from(0), Decimal::from(2)),
-      Decimal::from(0)
+      Ok(Decimal::from(0))
     );
   }
 
@@ -291,21 +305,26 @@ mod tests {
   }
 
   #[test]
+  fn root_5() {
+    assert_eq!(
+      super::root(Decimal::from(8), Decimal::from(3)),
+      Ok(Decimal::from(2))
+    );
+  }
+
+  #[test]
   fn factorial_1() {
     assert!(super::factorial(Decimal::from(-1568)).is_err());
   }
 
   #[test]
   fn factorial_2() {
-    assert_eq!(super::factorial(Decimal::from(0)), Decimal::from(1));
+    assert_eq!(super::factorial(Decimal::from(0)), Ok(Decimal::from(1)));
   }
 
   #[test]
   fn factorial_3() {
-    assert_eq!(
-      super::factorial(Decimal::from(15)),
-      Decimal::from(1307674368000)
-    );
+    assert_eq!(super::factorial(Decimal::from(4)), Ok(Decimal::from(24)));
   }
 
   #[test]
@@ -315,12 +334,15 @@ mod tests {
 
   #[test]
   fn factorial_5() {
-    assert_eq!(super::factorial(Decimal::from(1)), Decimal::from(1));
+    assert_eq!(super::factorial(Decimal::from(1)), Ok(Decimal::from(1)));
   }
 
   #[test]
   fn factorial_6() {
-    assert_eq!(super::factorial(Decimal::from(9)), Decimal::from(362880));
+    assert_eq!(
+      super::factorial(Decimal::from(9)),
+      Ok(Decimal::from(362880))
+    );
   }
 
   #[test]
