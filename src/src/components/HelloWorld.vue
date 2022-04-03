@@ -18,9 +18,9 @@ export default {
       invoke("math_operation", {
         event: "sum",
         payload: {
-          a: "69420",
-          b: "560asdf",
-          operation: "sum"
+          a: "450",
+          b: "720",
+          operation: "divide"
         }
 
       }).then(result => {
