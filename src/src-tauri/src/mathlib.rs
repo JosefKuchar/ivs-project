@@ -246,7 +246,7 @@ mod tests {
       Ok(Decimal::from(35.4))
     );
   }
-  
+
   #[test]
   fn pow_1() {
     assert_eq!(
