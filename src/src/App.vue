@@ -13,7 +13,6 @@
         <input
           ref="mathInput"
           v-model="inputValue"
-          autofocus
           class="w-full appearance-none bg-transparent text-right text-lg font-semibold text-gray-600 focus:text-purple-600 focus:outline-none dark:text-gray-300 dark:focus:text-purple-400"
         />
         <h3 class="text-5xl font-bold dark:text-white">20</h3>
@@ -22,44 +21,46 @@
         class="flex h-full flex-col space-y-6 rounded-t-3xl bg-white px-7 pt-5 pb-8 transition ease-in-out dark:bg-gray-800"
       >
         <div class="grid grow grid-cols-4 gap-x-6">
-          <BaseButton type="function">ABS</BaseButton>
-          <BaseButton type="function">!</BaseButton>
-          <BaseButton type="function">xⁿ</BaseButton>
-          <BaseButton type="function">√x</BaseButton>
+          <BaseButton type="function" @click="inputValue += '|| '">ABS</BaseButton>
+          <BaseButton type="function" @click="inputValue += '!'">!</BaseButton>
+          <BaseButton type="function" @click="inputValue += '^'">xⁿ</BaseButton>
+          <BaseButton type="function" @click="inputValue += 'sqrt() '">√x</BaseButton>
         </div>
         <div class="grid grow grid-cols-4 gap-x-6">
-          <BaseButton type="function">+</BaseButton>
-          <BaseButton type="function">-</BaseButton>
-          <BaseButton type="function">/</BaseButton>
-          <BaseButton type="function">*</BaseButton>
+          <BaseButton type="function" @click="inputValue += ' + '">+</BaseButton>
+          <BaseButton type="function" @click="inputValue += ' - '">-</BaseButton>
+          <BaseButton type="function" @click="inputValue += ' / '">/</BaseButton>
+          <BaseButton type="function" @click="inputValue += ' * '">*</BaseButton>
         </div>
         <div class="grid grow grid-cols-4 gap-x-6">
-          <BaseButton>7</BaseButton>
-          <BaseButton>8</BaseButton>
-          <BaseButton>9</BaseButton>
-          <BaseButton type="function"><BackspaceIcon class="h-6 w-6" /></BaseButton>
+          <BaseButton @click="inputValue += '7'">7</BaseButton>
+          <BaseButton @click="inputValue += '8'">8</BaseButton>
+          <BaseButton @click="inputValue += '9'">9</BaseButton>
+          <BaseButton type="function" @click="inputValue = inputValue.slice(0, -1)"
+            ><BackspaceIcon class="h-6 w-6"
+          /></BaseButton>
         </div>
         <div class="grid grow grid-cols-4 gap-x-6">
-          <BaseButton>4</BaseButton>
-          <BaseButton>5</BaseButton>
-          <BaseButton>6</BaseButton>
-          <BaseButton type="function">AC</BaseButton>
+          <BaseButton @click="inputValue += '4'">4</BaseButton>
+          <BaseButton @click="inputValue += '5'">5</BaseButton>
+          <BaseButton @click="inputValue += '6'">6</BaseButton>
+          <BaseButton type="function" @click="inputValue = ''">AC</BaseButton>
         </div>
         <div class="grid grow grid-cols-4 gap-x-6">
           <div class="col-span-2 flex flex-col gap-y-6">
             <div class="grid grow grid-cols-2 gap-x-6">
-              <BaseButton>1</BaseButton>
-              <BaseButton>2</BaseButton>
+              <BaseButton @click="inputValue += '1'">1</BaseButton>
+              <BaseButton @click="inputValue += '2'">2</BaseButton>
             </div>
             <div class="grid grow">
-              <BaseButton>0</BaseButton>
+              <BaseButton @click="inputValue += '0'">0</BaseButton>
             </div>
           </div>
           <div class="flex grow flex-col space-y-6">
-            <BaseButton>3</BaseButton>
-            <BaseButton>.</BaseButton>
+            <BaseButton @click="inputValue += '3'">3</BaseButton>
+            <BaseButton @click="inputValue += '.'">.</BaseButton>
           </div>
-          <BaseButton type="filled">=</BaseButton>
+          <BaseButton type="filled" @click="inputValue += ' ='">=</BaseButton>
         </div>
       </div>
     </div>
