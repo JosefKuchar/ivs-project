@@ -1,6 +1,6 @@
 <script setup>
-  import { invoke } from '@tauri-apps/api/tauri'
-  import { ref } from 'vue'
+import { invoke } from '@tauri-apps/api/tauri'
+import { ref } from 'vue'
 </script>
 
 <script>
@@ -8,34 +8,35 @@ export default {
   data() {
     return {
       count: 0,
-      msg: ""
+      msg: '',
     }
   },
 
   methods: {
     increment() {
       // Test invoke of API
-      invoke("math_operation", {
-        event: "sum",
+      invoke('math_operation', {
+        event: 'sum',
         payload: {
-          a: "450",
-          b: "720",
-          operation: "divide"
-        }
-
-      }).then(result => {
-        this.msg = result
-      }).catch(error => {
-        this.msg = error
-      });
+          a: '450',
+          b: '720',
+          operation: 'divide',
+        },
+      })
+        .then((result) => {
+          this.msg = result
+        })
+        .catch((error) => {
+          this.msg = error
+        })
       this.count++
-    }
-  }
+    },
+  },
 }
 </script>
 
 <template>
-  <h1>{{ msg}}</h1>
+  <h1>{{ msg }}</h1>
 
   <p>
     Recommended IDE setup:
@@ -47,9 +48,7 @@ export default {
   <p>See <code>README.md</code> for more information.</p>
 
   <p>
-    <a href="https://vitejs.dev/guide/features.html" target="_blank">
-      Vite Docs
-    </a>
+    <a href="https://vitejs.dev/guide/features.html" target="_blank"> Vite Docs </a>
     |
     <a href="https://v3.vuejs.org/" target="_blank">Vue 3 Docs</a>
   </p>
