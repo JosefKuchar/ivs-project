@@ -1,24 +1,51 @@
+//! Main math backend
+//!
+//! Each operation accepts operands and returns result.
+//! Result can be either number (operation result) or error (with message).
+
+// Has to be here, because middeware is seemingly also dead code
+#![allow(dead_code)]
+
 use dec::*;
 
-// Number of digit precision
-//TODO: Determine this properly
+// TODO: Determine this properly
+/// Digit precision
 const PRECISION: usize = 200;
 
-// Typedef for simpler usage, also should be used outside mode
+/// Represents all numbers
 pub type Dec = Decimal<PRECISION>;
 
+/// Add two numbers
+///
+/// ## Represents
+/// `a + b`
 pub fn add(a: Dec, b: Dec) -> Dec {
   a + b
 }
 
+/// Subtract two numbers
+///
+/// ## Represents
+/// `a - b`
 pub fn subtract(a: Dec, b: Dec) -> Dec {
   a - b
 }
 
+/// Multiply two numbers
+///
+/// ## Represents
+/// `a * b`
 pub fn multiply(a: Dec, b: Dec) -> Dec {
   a * b
 }
 
+/// Divide two numbers
+///
+/// ## Restrictions
+/// * `b` - Can't be zero
+///
+/// ## Represents
+/// `a / b`
 pub fn divide(a: Dec, b: Dec) -> Result<Dec, String> {
   if b.is_zero() {
     Err("Cannot divide by 0!".to_string())
@@ -27,6 +54,13 @@ pub fn divide(a: Dec, b: Dec) -> Result<Dec, String> {
   }
 }
 
+/// Power operation
+///
+/// ## Restrictions
+/// * `b` - Has to be natural number
+///
+/// ## Represents
+/// `a ^ b`
 pub fn pow(a: Dec, b: Dec) -> Result<Dec, String> {
   let mut ctx = Context::<Dec>::default();
   if b.exponent() != 0 || b < Decimal::from(1) {
@@ -39,6 +73,14 @@ pub fn pow(a: Dec, b: Dec) -> Result<Dec, String> {
   }
 }
 
+/// Root operation
+///
+/// ## Restrictions
+/// * `a` - Can only be negative if `b` is odd
+/// * `b` - Has to be natural number
+///
+/// ## Represents
+/// `a ^ (1 / b)`
 pub fn root(a: Dec, b: Dec) -> Result<Dec, String> {
   let mut ctx = Context::<Dec>::default();
   ctx.set_min_exponent(-1);
@@ -61,6 +103,13 @@ pub fn root(a: Dec, b: Dec) -> Result<Dec, String> {
   }
 }
 
+/// Factorial operation
+///
+/// ## Restrinctions
+/// * `a` - Has to be natural number
+///
+/// ## Represents
+/// `a!`
 pub fn factorial(a: Dec) -> Result<Dec, String> {
   let mut ctx = Context::<Dec>::default();
   if a.exponent() != 0 || a.is_negative() {
@@ -71,6 +120,10 @@ pub fn factorial(a: Dec) -> Result<Dec, String> {
   }
 }
 
+/// Absolute value operation
+///
+/// ## Represents
+/// `| a |`
 pub fn abs(a: Dec) -> Dec {
   let mut ctx = Context::<Dec>::default();
   let mut mut_a = a.clone();
