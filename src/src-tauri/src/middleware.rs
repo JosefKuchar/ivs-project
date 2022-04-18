@@ -12,7 +12,7 @@ use tauri::command;
 pub struct RequestBody {
   /// First operand
   a: String,
-  /// Second operand (only used on some operations)
+  /// Second operand (only used in some operations)
   b: Option<String>,
   /// Operation name (listed in mathlib)
   operation: String,
