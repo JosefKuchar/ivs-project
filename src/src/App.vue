@@ -11,56 +11,59 @@
       </header>
       <div class="flex flex-col items-end px-9 pt-14 pb-3">
         <input
-          ref="mathInput"
-          v-model="inputValue"
+          v-model="inputPrevious"
+          disabled
           class="w-full appearance-none bg-transparent text-right text-lg font-semibold text-gray-600 focus:text-purple-600 focus:outline-none dark:text-gray-300 dark:focus:text-purple-400"
         />
-        <h3 class="text-5xl font-bold dark:text-white">20</h3>
+        <input
+          ref="mathInput"
+          v-model="currentNum"
+          placeholder="0"
+          class="w-full appearance-none bg-transparent text-right text-3xl font-bold focus:outline-none dark:text-white"
+        />
       </div>
       <div
         class="flex h-full flex-col space-y-6 rounded-t-3xl bg-white px-7 pt-5 pb-8 transition ease-in-out dark:bg-gray-800"
       >
         <div class="grid grow grid-cols-4 gap-x-6">
-          <BaseButton type="function" @click="inputValue += '|| '">ABS</BaseButton>
-          <BaseButton type="function" @click="inputValue += '!'">!</BaseButton>
-          <BaseButton type="function" @click="inputValue += '^'">xⁿ</BaseButton>
-          <BaseButton type="function" @click="inputValue += 'sqrt() '">√x</BaseButton>
+          <BaseButton type="function" @click="onFunctionInput('abs')">ABS</BaseButton>
+          <BaseButton type="function" @click="onFunctionInput('factorial')">!</BaseButton>
+          <BaseButton type="function" @click="onFunctionInput('pow')">xⁿ</BaseButton>
+          <BaseButton type="function" @click="onFunctionInput('root')">√x</BaseButton>
         </div>
         <div class="grid grow grid-cols-4 gap-x-6">
-          <BaseButton type="function" @click="inputValue += ' + '">+</BaseButton>
-          <BaseButton type="function" @click="inputValue += ' - '">-</BaseButton>
-          <BaseButton type="function" @click="inputValue += ' / '">/</BaseButton>
-          <BaseButton type="function" @click="inputValue += ' * '">*</BaseButton>
+          <BaseButton type="function" @click="onFunctionInput('add')">+</BaseButton>
+          <BaseButton type="function" @click="onFunctionInput('subtract')">-</BaseButton>
+          <BaseButton type="function" @click="onFunctionInput('divide')">/</BaseButton>
+          <BaseButton type="function" @click="onFunctionInput('multiply')">*</BaseButton>
         </div>
         <div class="grid grow grid-cols-4 gap-x-6">
-          <BaseButton @click="inputValue += '7'">7</BaseButton>
-          <BaseButton @click="inputValue += '8'">8</BaseButton>
-          <BaseButton @click="inputValue += '9'">9</BaseButton>
-          <BaseButton type="function" @click="inputValue = inputValue.slice(0, -1)"
-            ><BackspaceIcon class="h-6 w-6"
-          /></BaseButton>
+          <BaseButton @click="parseNumber('7')">7</BaseButton>
+          <BaseButton @click="parseNumber('8')">8</BaseButton>
+          <BaseButton @click="parseNumber('9')">9</BaseButton>
+          <BaseButton type="function" @click="onBackspace()"><BackspaceIcon class="h-6 w-6" /></BaseButton>
         </div>
         <div class="grid grow grid-cols-4 gap-x-6">
-          <BaseButton @click="inputValue += '4'">4</BaseButton>
-          <BaseButton @click="inputValue += '5'">5</BaseButton>
-          <BaseButton @click="inputValue += '6'">6</BaseButton>
-          <BaseButton type="function" @click="inputValue = ''">AC</BaseButton>
+          <BaseButton @click="parseNumber('4')">4</BaseButton>
+          <BaseButton @click="parseNumber('5')">5</BaseButton>
+          <BaseButton @click="parseNumber('6')">6</BaseButton>
+          <BaseButton type="function" @click="onEraseAll()">AC</BaseButton>
         </div>
         <div class="grid grow grid-cols-4 gap-x-6">
           <div class="col-span-2 flex flex-col gap-y-6">
             <div class="grid grow grid-cols-2 gap-x-6">
-              <BaseButton @click="inputValue += '1'">1</BaseButton>
-              <BaseButton @click="inputValue += '2'">2</BaseButton>
+              <BaseButton @click="parseNumber('1')">1</BaseButton>
+              <BaseButton @click="parseNumber('2')">2</BaseButton>
             </div>
             <div class="grid grow">
-              <BaseButton @click="inputValue += '0'">0</BaseButton>
+              <BaseButton @click="parseNumber('0')">0</BaseButton>
             </div>
           </div>
           <div class="flex grow flex-col space-y-6">
-            <BaseButton @click="inputValue += '3'">3</BaseButton>
-            <BaseButton @click="inputValue += '.'">.</BaseButton>
+            <BaseButton @click="parseNumber('3')">3</BaseButton>
+            <BaseButton @click="parseNumber('.')">.</BaseButton>
           </div>
-          <BaseButton type="filled" @click="inputValue += ' ='">=</BaseButton>
+          <BaseButton type="filled" @click="onEqualSign('=')">=</BaseButton>
         </div>
       </div>
     </div>
@@ -73,6 +76,7 @@ import { MoonIcon as SolidMoonIcon } from '@heroicons/vue/solid'
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
 import LargeSwitch from './components/LargeSwitch.vue'
 import BaseButton from './components/BaseButton.vue'
+import { invoke } from '@tauri-apps/api/tauri'
 
 export default defineComponent({
   components: {
@@ -86,10 +90,105 @@ export default defineComponent({
   setup() {
     let darkMode = ref(false)
     let mathInput = ref<InstanceType<typeof HTMLInputElement>>()
-    let inputValue = ref('')
+    let inputPrevious = ref('')
+
+    let currentNum = ref('')
+    let previousNum = ref('')
+    let functiond = ref('')
+    let calcError = ref(false)
+    let isResult = ref(false)
 
     const onDarkModeToggle = () => {
       darkMode.value = !darkMode.value
+    }
+
+    const errorCheck = () => {
+      if (calcError.value) {
+        currentNum.value = ''
+        calcError.value = false
+      }
+    }
+
+    // onNumInput
+    const parseNumber = (num: string) => {
+      errorCheck()
+
+      if (isResult.value) {
+        previousNum.value = currentNum.value
+        currentNum.value = num
+        isResult.value = false
+        return
+      }
+
+      if (num === '.') {
+        if (!currentNum.value.includes('.')) {
+          if (!currentNum.value) currentNum.value = '0'
+          currentNum.value += '.'
+        }
+        return
+      }
+
+      if (currentNum.value === '0') currentNum.value = ''
+
+      currentNum.value += num
+    }
+
+    const onEraseAll = () => {
+      currentNum.value = ''
+      previousNum.value = ''
+      functiond.value = ''
+      calcError.value = false
+    }
+
+    const onBackspace = () => {
+      if (calcError.value || isResult.value) onEraseAll()
+
+      currentNum.value = currentNum.value.slice(0, -1)
+    }
+
+    const onFunctionInput = (func: string) => {
+      errorCheck()
+
+      // If function is already set
+      // TODO: Fix multiple operations when chaining functions
+      if (functiond.value) {
+        onEqualSign()
+      }
+
+      // If current number is not set
+      if (!currentNum.value) currentNum.value = '0'
+
+      previousNum.value = currentNum.value
+      currentNum.value = ''
+
+      functiond.value = func
+    }
+
+    const onEqualSign = (arg?: string) => {
+      if (!functiond.value) return
+
+      invoke('math_operation', {
+        payload: {
+          a: previousNum.value,
+          b: currentNum.value == '' ? undefined : currentNum.value,
+          operation: functiond.value,
+        },
+      })
+        .then((result) => {
+          currentNum.value = result as string
+          previousNum.value = ''
+          isResult.value = true
+
+          if (arg === '=') {
+            functiond.value = ''
+          }
+        })
+        // TODO: Check for NaN with obscure pow and throw error
+        .catch((error) => {
+          calcError.value = true
+          currentNum.value = error
+          functiond.value = ''
+        })
     }
 
     const focusInput = () => {
@@ -109,7 +208,13 @@ export default defineComponent({
       onDarkModeToggle,
       focusInput,
       mathInput,
-      inputValue,
+      currentNum,
+      inputPrevious,
+      parseNumber,
+      onFunctionInput,
+      onEqualSign,
+      onEraseAll,
+      onBackspace,
     }
   },
 })
