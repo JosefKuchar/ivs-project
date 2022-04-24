@@ -27,3 +27,7 @@ custom-protocol = [ "tauri/custom-protocol" ]
 [[bin]]
 name = "stddev"
 path = "src/stddev.rs"
+
+[[bin]]
+name = "app"
+path = "src/main.rs"

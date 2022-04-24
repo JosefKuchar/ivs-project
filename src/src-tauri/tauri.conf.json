@@ -1,6 +1,6 @@
 {
   "package": {
-    "productName": "frontend",
+    "productName": "Calculator",
     "version": "0.1.0"
   },
   "build": {
