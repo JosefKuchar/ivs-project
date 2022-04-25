@@ -9,17 +9,13 @@
           <SolidMoonIcon v-else class="h-6 w-6 text-purple-600" />
         </div>
       </header>
-      <div class="flex flex-col items-end px-9 pt-14 pb-3">
-        <input
-          v-model="inputPrevious"
-          disabled
-          class="w-full appearance-none bg-transparent text-right text-lg font-semibold text-gray-600 focus:text-purple-600 focus:outline-none dark:text-gray-300 dark:focus:text-purple-400"
-        />
+      <div class="items-end px-9 pt-14 pb-3">
         <input
           ref="mathInput"
           v-model="currentNum"
           placeholder="0"
-          class="w-full appearance-none bg-transparent text-right text-3xl font-bold focus:outline-none dark:text-white"
+          disabled
+          class="disabled: w-full appearance-none truncate bg-transparent text-right text-3xl font-bold text-gray-900 focus:outline-none dark:text-white"
         />
       </div>
       <div
@@ -90,7 +86,6 @@ export default defineComponent({
   setup() {
     let darkMode = ref(false)
     let mathInput = ref<InstanceType<typeof HTMLInputElement>>()
-    let inputPrevious = ref('')
 
     let currentNum = ref('')
     let previousNum = ref('')
@@ -114,7 +109,8 @@ export default defineComponent({
       errorCheck()
 
       if (isResult.value) {
-        previousNum.value = currentNum.value
+        // When commented out, using result works as previous num
+        // previousNum.value = currentNum.value
         currentNum.value = num
         isResult.value = false
         return
@@ -149,14 +145,19 @@ export default defineComponent({
     const onFunctionInput = (func: string) => {
       errorCheck()
 
-      // If function is already set
-      // TODO: Fix multiple operations when chaining functions
-      if (functiond.value) {
-        onEqualSign()
-      }
-
       // If current number is not set
       if (!currentNum.value) currentNum.value = '0'
+
+      // If function is already set
+      if (functiond.value && previousNum.value) {
+        if (func === 'factorial' || func === 'abs') {
+          currentNum.value = ''
+        }
+
+        onEqualSign()
+        functiond.value = func
+        return
+      }
 
       previousNum.value = currentNum.value
       currentNum.value = ''
@@ -165,7 +166,8 @@ export default defineComponent({
     }
 
     const onEqualSign = (arg?: string) => {
-      if (!functiond.value) return
+      if (!functiond.value || !previousNum.value) return
+      console.log(functiond.value)
 
       invoke('math_operation', {
         payload: {
@@ -183,7 +185,6 @@ export default defineComponent({
             functiond.value = ''
           }
         })
-        // TODO: Check for NaN with obscure pow and throw error
         .catch((error) => {
           calcError.value = true
           currentNum.value = error
@@ -191,25 +192,88 @@ export default defineComponent({
         })
     }
 
-    const focusInput = () => {
-      if (mathInput.value) mathInput.value.focus()
+    const parseInput = (e: KeyboardEvent) => {
+      console.log(e.key)
+      switch (e.key) {
+        case '1':
+          parseNumber('1')
+          break
+        case '2':
+          parseNumber('2')
+          break
+        case '3':
+          parseNumber('3')
+          break
+        case '4':
+          parseNumber('4')
+          break
+        case '5':
+          parseNumber('5')
+          break
+        case '6':
+          parseNumber('6')
+          break
+        case '7':
+          parseNumber('7')
+          break
+        case '8':
+          parseNumber('8')
+          break
+        case '9':
+          parseNumber('9')
+          break
+        case '.':
+          parseNumber('.')
+          break
+        case '+':
+          onFunctionInput('add')
+          break
+        case '-':
+          onFunctionInput('subtract')
+          break
+        case '*':
+          onFunctionInput('multiply')
+          break
+        case '/':
+          onFunctionInput('divide')
+          break
+        case 'a':
+          onFunctionInput('abs')
+          break
+        case 'f':
+          onFunctionInput('factorial')
+          break
+        case 'p':
+          onFunctionInput('pow')
+          break
+        case 'r':
+          onFunctionInput('root')
+          break
+        case 'c':
+          onEraseAll()
+          break
+        case '=':
+          onEqualSign()
+          break
+        case 'Backspace':
+          onBackspace()
+          break
+      }
     }
 
     onMounted(() => {
-      document.addEventListener('keydown', focusInput)
+      document.addEventListener('keydown', parseInput)
     })
 
     onUnmounted(() => {
-      document.removeEventListener('keydown', focusInput)
+      document.removeEventListener('keydown', parseInput)
     })
 
     return {
       darkMode,
       onDarkModeToggle,
-      focusInput,
       mathInput,
       currentNum,
-      inputPrevious,
       parseNumber,
       onFunctionInput,
       onEqualSign,
