@@ -1,8 +1,17 @@
 <template>
-  <div :class="darkMode ? 'dark' : ''" class="min-h-screen">
+  <div :class="darkMode ? 'dark' : ''" class="relative min-h-screen">
     <div class="flex h-screen flex-col bg-gray-50 transition ease-in-out dark:bg-gray-900">
-      <header class="flex items-center justify-between px-9 pt-8">
-        <InformationCircleIcon class="h-6 w-6 text-gray-600" />
+      <header class="flex items-center justify-between pl-7 pr-9 pt-8">
+        <div
+          class="ease hover:dark:bg-gray-70 cursor-pointer rounded-full p-2 transition hover:bg-gray-200"
+          :class="infoActive ? 'bg-gray-200 dark:bg-gray-700' : ''"
+          @click="onInfoToggle"
+        >
+          <InformationCircleIcon
+            :class="infoActive ? 'text-purple-600 dark:text-purple-400 hover:dark:text-gray-300' : 'text-gray-600'"
+            class="h-6 w-6"
+          />
+        </div>
         <div class="flex items-center space-x-3">
           <LargeSwitch v-model="darkMode" @input="onDarkModeToggle" />
           <MoonIcon v-if="!darkMode" class="h-6 w-6 text-gray-600" />
@@ -15,7 +24,7 @@
           v-model="currentNum"
           placeholder="0"
           disabled
-          class="disabled: w-full appearance-none truncate bg-transparent text-right text-3xl font-bold text-gray-900 focus:outline-none dark:text-white"
+          class="w-full appearance-none truncate bg-transparent text-right text-3xl font-bold focus:outline-none disabled:text-gray-900 dark:disabled:text-white"
         />
       </div>
       <div
@@ -63,6 +72,7 @@
         </div>
       </div>
     </div>
+    <InfoCard v-if="infoActive" />
   </div>
 </template>
 
@@ -73,9 +83,11 @@ import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
 import LargeSwitch from './components/LargeSwitch.vue'
 import BaseButton from './components/BaseButton.vue'
 import { invoke } from '@tauri-apps/api/tauri'
+import InfoCard from './components/InfoCard.vue'
 
 export default defineComponent({
   components: {
+    InfoCard,
     BaseButton,
     InformationCircleIcon,
     MoonIcon,
@@ -86,6 +98,7 @@ export default defineComponent({
   setup() {
     let darkMode = ref(false)
     let mathInput = ref<InstanceType<typeof HTMLInputElement>>()
+    let infoActive = ref(false)
 
     let currentNum = ref('')
     let previousNum = ref('')
@@ -95,6 +108,10 @@ export default defineComponent({
 
     const onDarkModeToggle = () => {
       darkMode.value = !darkMode.value
+    }
+
+    const onInfoToggle = () => {
+      infoActive.value = !infoActive.value
     }
 
     const errorCheck = () => {
@@ -279,6 +296,8 @@ export default defineComponent({
       onEqualSign,
       onEraseAll,
       onBackspace,
+      infoActive,
+      onInfoToggle,
     }
   },
 })
