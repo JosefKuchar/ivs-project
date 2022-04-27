@@ -27,3 +27,7 @@
 *.exe
 *.out
 *.app
+
+.idea/
+.DS_Store
+result

@@ -54,8 +54,8 @@
     "windows": [
       {
         "title": "Calculator",
-        "width": 800,
-        "height": 600,
+        "width": 425,
+        "height": 795,
         "resizable": true,
         "fullscreen": false
       }

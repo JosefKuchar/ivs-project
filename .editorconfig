@@ -7,3 +7,6 @@ end_of_line = lf
 
 [*.cpp]
 indent_size = 4
+
+[*.vue]
+indent_size = 2
