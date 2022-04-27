@@ -14,3 +14,7 @@ Windows 64bit
 ## Licence
 
 Tento program je poskytován pod licencí GPLv3, celé znění v souboru LICENSE
+
+## Kompilování projektu
+
+Seznam potřebných závislostí pro kompilaci je uveden v souboru INSTALL.md
