@@ -20,6 +20,12 @@
       </header>
       <div class="items-end px-9 pt-14 pb-3">
         <input
+          v-model="operationDisplay"
+          placeholder="0"
+          disabled
+          class="w-full appearance-none truncate bg-transparent text-right text-xl font-bold focus:outline-none disabled:text-gray-900 dark:disabled:text-white"
+        />
+        <input
           ref="mathInput"
           v-model="currentNum"
           placeholder="0"
@@ -68,7 +74,7 @@
             <BaseButton @click="onNumber('3')">3</BaseButton>
             <BaseButton @click="onNumber('.')">.</BaseButton>
           </div>
-          <BaseButton type="filled" @click="onEqualSign('=')">=</BaseButton>
+          <BaseButton type="filled" @click="doCalculation()">=</BaseButton>
         </div>
       </div>
     </div>
@@ -98,6 +104,7 @@ export default defineComponent({
   setup() {
     let darkMode = ref(false) // If true, the theme is dark
     let mathInput = ref<InstanceType<typeof HTMLInputElement>>() // The displayed number
+    let operationDisplay = ref('') // The displayed operation
     let infoActive = ref(false) // If true, the info card is active
     let currentNum = ref('') // Current number
     let previousNum = ref('') // Previous number
@@ -120,13 +127,39 @@ export default defineComponent({
     }
 
     /**
-     * @brief Handles clicks when error is present
+     * @brief Handles clicks when error or result is present
      */
-    const errorMiddleware = () => {
-      if (calcError.value) {
+    const middleware = () => {
+      if (calcError.value || isResult.value) {
         currentNum.value = ''
+        isResult.value = false
         calcError.value = false
       }
+    }
+
+    /**
+     * @brief Display last operation
+     */
+    const displayOperation = () => {
+      if (['add', 'subtract', 'multiply', 'divide'].includes(operation.value)) {
+        const map = { add: '+', subtract: '-', multiply: '*', divide: '/' }
+        operationDisplay.value = `${previousNum.value} ${map[operation.value]} ${currentNum.value} =`
+      } else if ('factorial' === operation.value) {
+        operationDisplay.value = `${previousNum.value}! =`
+      } else if ('abs' === operation.value) {
+        operationDisplay.value = `| ${previousNum.value} | =`
+      } else {
+        operationDisplay.value = `${operation.value}(${previousNum.value}, ${currentNum.value}) =`
+      }
+    }
+
+    /**
+     * @brief Check if operation is unary
+     *
+     * @param op Operation
+     */
+    const isUnaryOperation = (op: string) => {
+      return op === 'abs' || op === 'factorial'
     }
 
     /**
@@ -135,17 +168,10 @@ export default defineComponent({
      * @param num Number or dot to be added
      */
     const onNumber = (num: string) => {
-      errorMiddleware()
-
-      if (isResult.value) {
-        // When commented out, using result works as previous num
-        // previousNum.value = currentNum.value
-        currentNum.value = num
-        isResult.value = false
-        return
-      }
+      middleware()
 
       if (num === '.') {
+        // Prevent multiple dots in one number
         if (!currentNum.value.includes('.')) {
           if (!currentNum.value) currentNum.value = '0'
           currentNum.value += '.'
@@ -153,6 +179,7 @@ export default defineComponent({
         return
       }
 
+      // Prevent leading zeros
       if (currentNum.value === '0') currentNum.value = ''
 
       currentNum.value += num
@@ -166,13 +193,14 @@ export default defineComponent({
       previousNum.value = ''
       operation.value = ''
       calcError.value = false
+      operationDisplay.value = ''
     }
 
     /**
      * @brief Backspace handler
      */
     const onBackspace = () => {
-      if (calcError.value || isResult.value) onEraseAll()
+      middleware()
 
       currentNum.value = currentNum.value.slice(0, -1)
     }
@@ -180,60 +208,63 @@ export default defineComponent({
     /**
      * @brief Operation handler
      *
-     * @param func Function character
+     * @param op Function character
      */
-    const onOperation = (func: string) => {
-      errorMiddleware()
+    const onOperation = (op: string) => {
+      // middleware()
 
       // If current number is not set
       if (!currentNum.value) currentNum.value = '0'
 
-      // If function is already set
-      if (operation.value && previousNum.value) {
-        if (func === 'factorial' || func === 'abs') {
-          currentNum.value = ''
-        }
-
-        onEqualSign()
-        operation.value = func
+      // Handle unary operations
+      if (isUnaryOperation(op)) {
+        previousNum.value = currentNum.value
+        operation.value = op
+        doCalculation()
         return
       }
 
+      // If function is already set
+      if (operation.value && previousNum.value) {
+        doCalculation()
+        operation.value = op
+        return
+      }
+
+      // Shift numbers
       previousNum.value = currentNum.value
       currentNum.value = ''
 
-      operation.value = func
+      operation.value = op
     }
 
     /**
-     * @brief Handle result
-     *
-     * @param arg TODO
+     * @brief Do actual calculation (by calling to the backend via API)
      */
-    const onEqualSign = (arg?: string) => {
+    const doCalculation = () => {
       if (!operation.value || !previousNum.value) return
-      console.log(operation.value)
 
       invoke('math_operation', {
         payload: {
           a: previousNum.value,
-          b: currentNum.value == '' ? undefined : currentNum.value,
+          b: currentNum.value == '' || isUnaryOperation(operation.value) ? undefined : currentNum.value,
           operation: operation.value,
         },
       })
         .then((result: string) => {
+          displayOperation()
           calcError.value = false
           currentNum.value = result
           previousNum.value = ''
           isResult.value = true
-
-          if (arg === '=') {
-            operation.value = ''
-          }
+          operation.value = ''
         })
         .catch((error) => {
+          displayOperation()
           calcError.value = true
           currentNum.value = error
+          previousNum.value = ''
+          isResult.value = false
           operation.value = ''
         })
     }
@@ -263,11 +294,11 @@ export default defineComponent({
         p: () => onOperation('pow'),
         r: () => onOperation('root'),
         c: () => onOperation('cos'),
-        '=': () => onEqualSign('='),
-        Enter: () => onEqualSign('='),
+        '=': () => doCalculation(),
+        Enter: () => doCalculation(),
         Backspace: () => onBackspace(),
+        Delete: () => onEraseAll(),
       }
-
       if (typeof events[e.key] === 'function') {
         events[e.key]()
       }
@@ -286,9 +317,10 @@ export default defineComponent({
       onDarkModeToggle,
       mathInput,
       currentNum,
+      operationDisplay,
       onNumber,
       onOperation,
-      onEqualSign,
+      doCalculation,
       onEraseAll,
       onBackspace,
       infoActive,
