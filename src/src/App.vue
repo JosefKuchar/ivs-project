@@ -31,42 +31,42 @@
         class="flex h-full flex-col space-y-6 rounded-t-3xl bg-white px-7 pt-5 pb-8 transition ease-in-out dark:bg-gray-800"
       >
         <div class="grid grow grid-cols-4 gap-x-6">
-          <BaseButton type="function" @click="onFunctionInput('abs')">ABS</BaseButton>
-          <BaseButton type="function" @click="onFunctionInput('factorial')">!</BaseButton>
-          <BaseButton type="function" @click="onFunctionInput('pow')">xⁿ</BaseButton>
-          <BaseButton type="function" @click="onFunctionInput('root')">√x</BaseButton>
+          <BaseButton type="function" @click="onOperation('abs')">ABS</BaseButton>
+          <BaseButton type="function" @click="onOperation('factorial')">!</BaseButton>
+          <BaseButton type="function" @click="onOperation('pow')">xⁿ</BaseButton>
+          <BaseButton type="function" @click="onOperation('root')">√x</BaseButton>
         </div>
         <div class="grid grow grid-cols-4 gap-x-6">
-          <BaseButton type="function" @click="onFunctionInput('add')">+</BaseButton>
-          <BaseButton type="function" @click="onFunctionInput('subtract')">-</BaseButton>
-          <BaseButton type="function" @click="onFunctionInput('divide')">/</BaseButton>
-          <BaseButton type="function" @click="onFunctionInput('multiply')">*</BaseButton>
+          <BaseButton type="function" @click="onOperation('add')">+</BaseButton>
+          <BaseButton type="function" @click="onOperation('subtract')">-</BaseButton>
+          <BaseButton type="function" @click="onOperation('divide')">/</BaseButton>
+          <BaseButton type="function" @click="onOperation('multiply')">*</BaseButton>
         </div>
         <div class="grid grow grid-cols-4 gap-x-6">
-          <BaseButton @click="parseNumber('7')">7</BaseButton>
-          <BaseButton @click="parseNumber('8')">8</BaseButton>
-          <BaseButton @click="parseNumber('9')">9</BaseButton>
+          <BaseButton @click="onNumber('7')">7</BaseButton>
+          <BaseButton @click="onNumber('8')">8</BaseButton>
+          <BaseButton @click="onNumber('9')">9</BaseButton>
           <BaseButton type="function" @click="onBackspace()"><BackspaceIcon class="h-6 w-6" /></BaseButton>
         </div>
         <div class="grid grow grid-cols-4 gap-x-6">
-          <BaseButton @click="parseNumber('4')">4</BaseButton>
-          <BaseButton @click="parseNumber('5')">5</BaseButton>
-          <BaseButton @click="parseNumber('6')">6</BaseButton>
+          <BaseButton @click="onNumber('4')">4</BaseButton>
+          <BaseButton @click="onNumber('5')">5</BaseButton>
+          <BaseButton @click="onNumber('6')">6</BaseButton>
           <BaseButton type="function" @click="onEraseAll()">AC</BaseButton>
         </div>
         <div class="grid grow grid-cols-4 gap-x-6">
           <div class="col-span-2 flex flex-col gap-y-6">
             <div class="grid grow grid-cols-2 gap-x-6">
-              <BaseButton @click="parseNumber('1')">1</BaseButton>
-              <BaseButton @click="parseNumber('2')">2</BaseButton>
+              <BaseButton @click="onNumber('1')">1</BaseButton>
+              <BaseButton @click="onNumber('2')">2</BaseButton>
             </div>
             <div class="grid grow">
-              <BaseButton @click="parseNumber('0')">0</BaseButton>
+              <BaseButton @click="onNumber('0')">0</BaseButton>
             </div>
           </div>
           <div class="flex grow flex-col space-y-6">
-            <BaseButton @click="parseNumber('3')">3</BaseButton>
-            <BaseButton @click="parseNumber('.')">.</BaseButton>
+            <BaseButton @click="onNumber('3')">3</BaseButton>
+            <BaseButton @click="onNumber('.')">.</BaseButton>
           </div>
           <BaseButton type="filled" @click="onEqualSign('=')">=</BaseButton>
         </div>
@@ -96,34 +96,46 @@ export default defineComponent({
     BackspaceIcon,
   },
   setup() {
-    let darkMode = ref(false)
-    let mathInput = ref<InstanceType<typeof HTMLInputElement>>()
-    let infoActive = ref(false)
+    let darkMode = ref(false) // If true, the theme is dark
+    let mathInput = ref<InstanceType<typeof HTMLInputElement>>() // The displayed number
+    let infoActive = ref(false) // If true, the info card is active
+    let currentNum = ref('') // Current number
+    let previousNum = ref('') // Previous number
+    let operation = ref('') // Operation
+    let calcError = ref(false) // If error is present
+    let isResult = ref(false) // If result is currently shown
 
-    let currentNum = ref('')
-    let previousNum = ref('')
-    let functiond = ref('')
-    let calcError = ref(false)
-    let isResult = ref(false)
-
+    /**
+     * @brief Dark mode switch handler
+     */
     const onDarkModeToggle = () => {
       darkMode.value = !darkMode.value
     }
 
+    /**
+     * @brief Info button handler
+     */
     const onInfoToggle = () => {
       infoActive.value = !infoActive.value
     }
 
-    const errorCheck = () => {
+    /**
+     * @brief Handles clicks when error is present
+     */
+    const errorMiddleware = () => {
       if (calcError.value) {
         currentNum.value = ''
         calcError.value = false
       }
     }
 
-    // onNumInput
-    const parseNumber = (num: string) => {
-      errorCheck()
+    /**
+     * @brief Number handler, also handles dot
+     *
+     * @param num Number or dot to be added
+     */
+    const onNumber = (num: string) => {
+      errorMiddleware()
 
       if (isResult.value) {
         // When commented out, using result works as previous num
@@ -146,144 +158,127 @@ export default defineComponent({
       currentNum.value += num
     }
 
+    /**
+     * @brief AC button handler
+     */
     const onEraseAll = () => {
       currentNum.value = ''
       previousNum.value = ''
-      functiond.value = ''
+      operation.value = ''
       calcError.value = false
     }
 
+    /**
+     * @brief Backspace handler
+     */
     const onBackspace = () => {
       if (calcError.value || isResult.value) onEraseAll()
 
       currentNum.value = currentNum.value.slice(0, -1)
     }
 
-    const onFunctionInput = (func: string) => {
-      errorCheck()
+    /**
+     * @brief Operation handler
+     *
+     * @param func Function character
+     */
+    const onOperation = (func: string) => {
+      errorMiddleware()
 
       // If current number is not set
       if (!currentNum.value) currentNum.value = '0'
 
       // If function is already set
-      if (functiond.value && previousNum.value) {
+      if (operation.value && previousNum.value) {
         if (func === 'factorial' || func === 'abs') {
           currentNum.value = ''
         }
 
         onEqualSign()
-        functiond.value = func
+        operation.value = func
         return
       }
 
       previousNum.value = currentNum.value
       currentNum.value = ''
 
-      functiond.value = func
+      operation.value = func
     }
 
+    /**
+     * @brief Handle result
+     *
+     * @param arg TODO
+     */
     const onEqualSign = (arg?: string) => {
-      if (!functiond.value || !previousNum.value) return
-      console.log(functiond.value)
+      if (!operation.value || !previousNum.value) return
+      console.log(operation.value)
 
       invoke('math_operation', {
         payload: {
           a: previousNum.value,
           b: currentNum.value == '' ? undefined : currentNum.value,
-          operation: functiond.value,
+          operation: operation.value,
         },
       })
-        .then((result) => {
-          currentNum.value = result as string
+        .then((result: string) => {
+          calcError.value = false
+          currentNum.value = result
           previousNum.value = ''
           isResult.value = true
 
           if (arg === '=') {
-            functiond.value = ''
+            operation.value = ''
           }
         })
         .catch((error) => {
           calcError.value = true
           currentNum.value = error
-          functiond.value = ''
+          operation.value = ''
         })
     }
 
-    const parseInput = (e: KeyboardEvent) => {
-      console.log(e.key)
-      switch (e.key) {
-        case '1':
-          parseNumber('1')
-          break
-        case '2':
-          parseNumber('2')
-          break
-        case '3':
-          parseNumber('3')
-          break
-        case '4':
-          parseNumber('4')
-          break
-        case '5':
-          parseNumber('5')
-          break
-        case '6':
-          parseNumber('6')
-          break
-        case '7':
-          parseNumber('7')
-          break
-        case '8':
-          parseNumber('8')
-          break
-        case '9':
-          parseNumber('9')
-          break
-        case '.':
-          parseNumber('.')
-          break
-        case '+':
-          onFunctionInput('add')
-          break
-        case '-':
-          onFunctionInput('subtract')
-          break
-        case '*':
-          onFunctionInput('multiply')
-          break
-        case '/':
-          onFunctionInput('divide')
-          break
-        case 'a':
-          onFunctionInput('abs')
-          break
-        case 'f':
-          onFunctionInput('factorial')
-          break
-        case 'p':
-          onFunctionInput('pow')
-          break
-        case 'r':
-          onFunctionInput('root')
-          break
-        case 'c':
-          onEraseAll()
-          break
-        case '=':
-          onEqualSign()
-          break
-        case 'Backspace':
-          onBackspace()
-          break
+    /**
+     * @brief Keyboard input handler
+     */
+    const onKeyPress = (e: KeyboardEvent) => {
+      const events = {
+        '0': () => onNumber('0'),
+        '1': () => onNumber('1'),
+        '2': () => onNumber('2'),
+        '3': () => onNumber('3'),
+        '4': () => onNumber('4'),
+        '5': () => onNumber('5'),
+        '6': () => onNumber('6'),
+        '7': () => onNumber('7'),
+        '8': () => onNumber('8'),
+        '9': () => onNumber('9'),
+        '.': () => onNumber('.'),
+        '+': () => onOperation('add'),
+        '-': () => onOperation('subtract'),
+        '*': () => onOperation('multiply'),
+        '/': () => onOperation('divide'),
+        a: () => onOperation('abs'),
+        f: () => onOperation('factorial'),
+        p: () => onOperation('pow'),
+        r: () => onOperation('root'),
+        c: () => onOperation('cos'),
+        '=': () => onEqualSign('='),
+        Enter: () => onEqualSign('='),
+        Backspace: () => onBackspace(),
+      }
+
+      if (typeof events[e.key] === 'function') {
+        events[e.key]()
       }
     }
 
+    // Register event listeners
     onMounted(() => {
-      document.addEventListener('keydown', parseInput)
+      document.addEventListener('keydown', onKeyPress)
     })
-
     onUnmounted(() => {
-      document.removeEventListener('keydown', parseInput)
+      document.removeEventListener('keydown', onKeyPress)
     })
 
     return {
@@ -291,8 +286,8 @@ export default defineComponent({
       onDarkModeToggle,
       mathInput,
       currentNum,
-      parseNumber,
-      onFunctionInput,
+      onNumber,
+      onOperation,
       onEqualSign,
       onEraseAll,
       onBackspace,
