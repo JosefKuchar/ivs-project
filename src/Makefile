@@ -8,6 +8,7 @@ clean:
 	cd src-tauri && cargo clean
 	powershell "if (Test-Path dist) {Remove-Item -Recurse -Force dist}"
 	powershell "if (Test-Path node_modules) {Remove-Item -Recurse -Force node_modules}"
+	powershell "if (Test-Path src-tauri/WixTools) {Remove-Item -Recurse -Force src-tauri/WixTools}"
 
 pack: all doc
 	powershell "if (Test-Path dist) {Remove-Item -Recurse -Force dist}"
@@ -17,6 +18,7 @@ pack: all doc
 	powershell "Copy-Item -Path src-tauri/target/release/bundle/msi/*.msi -Destination ../../xkucha28_xsirov00_xbenci01_xnecka00/install/"
 	cd .. && powershell "if (Test-Path ../xkucha28_xsirov00_xbenci01_xnecka00/doc) {Remove-Item -Recurse -Force ../xkucha28_xsirov00_xbenci01_xnecka00/doc} Move-Item -Path src/src-tauri/target/doc/* -Destination ../xkucha28_xsirov00_xbenci01_xnecka00/doc -Force"
 	cd src-tauri && cargo clean
+	powershell "if (Test-Path src-tauri/WixTools) {Remove-Item -Recurse -Force src-tauri/WixTools}"
 	cd ../../xkucha28_xsirov00_xbenci01_xnecka00 && powershell "if (-not (Test-Path repo)) {mkdir repo}"
 	cd .. && powershell "Copy-Item -Path ./* -Destination ../xkucha28_xsirov00_xbenci01_xnecka00/repo/ -Recurse -Force"
 	cd .. && powershell "Compress-Archive -Path ../xkucha28_xsirov00_xbenci01_xnecka00 -Destination xkucha28_xsirov00_xbenci01_xnecka00.zip"
