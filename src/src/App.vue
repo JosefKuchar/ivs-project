@@ -21,7 +21,6 @@
       <div class="items-end px-9 pt-14 pb-3">
         <input
           v-model="operationDisplay"
-          placeholder="0"
           disabled
           class="w-full appearance-none truncate bg-transparent text-right text-xl font-bold focus:outline-none disabled:text-gray-900 dark:disabled:text-white"
         />
@@ -142,15 +141,22 @@ export default defineComponent({
      * @brief Display last operation
      */
     const displayOperation = () => {
+      console.log(operation.value)
+
+      let num1 = previousNum.value
+      let num2 = currentNum.value
+      if (num1.length > 8) num1 = num1.substring(0, 8) + '...'
+      if (num2.length > 8) num2 = num2.substring(0, 8) + '...'
+
       if (['add', 'subtract', 'multiply', 'divide'].includes(operation.value)) {
         const map = { add: '+', subtract: '-', multiply: '*', divide: '/' }
-        operationDisplay.value = `${previousNum.value} ${map[operation.value]} ${currentNum.value} =`
+        operationDisplay.value = `${num1} ${(map as any)[operation.value]} ${num2} =`
       } else if ('factorial' === operation.value) {
-        operationDisplay.value = `${previousNum.value}! =`
+        operationDisplay.value = `${num1}! =`
       } else if ('abs' === operation.value) {
-        operationDisplay.value = `| ${previousNum.value} | =`
+        operationDisplay.value = `| ${num1} | =`
       } else {
-        operationDisplay.value = `${operation.value}(${previousNum.value}, ${currentNum.value}) =`
+        operationDisplay.value = `${operation.value}(${num1}, ${num2}) =`
       }
     }
 
@@ -217,7 +223,11 @@ export default defineComponent({
      * @param op Function character
      */
     const onOperation = (op: string) => {
-      // middleware()
+      if (calcError.value) {
+        currentNum.value = ''
+        isResult.value = false
+        calcError.value = false
+      }
 
       // If current number is not set
       if (!currentNum.value) currentNum.value = '0'
@@ -253,18 +263,26 @@ export default defineComponent({
     const doCalculation = (callback?: any) => {
       if (!operation.value || !previousNum.value) return
 
+      let b
+      if (isUnaryOperation(operation.value)) {
+        b = undefined
+      } else {
+        currentNum.value = currentNum.value || '0'
+        b = currentNum.value
+      }
+
       invoke('math_operation', {
         payload: {
           a: previousNum.value,
-          b: currentNum.value == '' || isUnaryOperation(operation.value) ? undefined : currentNum.value,
+          b: b,
           operation: operation.value,
         },
       })
-        .then((result: string) => {
+        .then((result) => {
           displayOperation()
           calcError.value = false
-          currentNum.value = result
-          previousNum.value = result
+          currentNum.value = result as string
+          previousNum.value = result as string
           isResult.value = true
           operation.value = ''
           if (callback) callback()
@@ -283,7 +301,7 @@ export default defineComponent({
      * @brief Keyboard input handler
      */
     const onKeyPress = (e: KeyboardEvent) => {
-      const events = {
+      const events: any = {
         '0': () => onNumber('0'),
         '1': () => onNumber('1'),
         '2': () => onNumber('2'),
@@ -316,10 +334,10 @@ export default defineComponent({
 
     // Register event listeners
     onMounted(() => {
-      document.addEventListener('keydown', onKeyPress)
+      document.addEventListener('keyup', onKeyPress)
     })
     onUnmounted(() => {
-      document.removeEventListener('keydown', onKeyPress)
+      document.removeEventListener('keyup', onKeyPress)
     })
 
     return {
