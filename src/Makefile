@@ -31,7 +31,7 @@ doc:
 	cd src-tauri; cargo doc --no-deps
 
 run:
-	cd src-tauri/target/release; run frontend.exe
+	cd src-tauri/target/release; run calculator.exe
 
 profile:
 	./src-tauri/target/release/stddev.exe
