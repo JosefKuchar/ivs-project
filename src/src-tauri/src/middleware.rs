@@ -68,14 +68,7 @@ pub fn math_operation(payload: RequestBody) -> Result<String, String> {
 
   // Return final result
   match result {
-    Ok(num) => {
-      let mut ctx = Context::<Dec>::default();
-      let mut num = num.clone();
-      // Reduce final number to shortest possible form, eg. 5.000 -> 5
-      // ctx.reduce(&mut num);
-      // ctx.rescale(&mut num, &Dec::from(0));
-      Ok(num.to_string())
-    }
+    Ok(num) => Ok(num.to_string()),
     Err(msg) => Err(msg),
   }
 }

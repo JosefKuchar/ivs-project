@@ -1,14 +1,14 @@
 <template>
-  <div :class="darkMode ? 'dark' : ''" class="relative min-h-screen">
+  <div :class="darkMode ? 'dark' : ''" class="relative min-h-screen select-none">
     <div class="flex h-screen flex-col bg-gray-50 transition ease-in-out dark:bg-gray-900">
       <header class="flex items-center justify-between pl-7 pr-9 pt-8">
         <div
-          class="ease hover:dark:bg-gray-70 cursor-pointer rounded-full p-2 transition hover:bg-gray-200"
+          class="ease hover:dark:bg-gray-700 cursor-pointer rounded-full p-2 transition hover:bg-gray-200"
           :class="infoActive ? 'bg-gray-200 dark:bg-gray-700' : ''"
           @click="onInfoToggle"
         >
           <InformationCircleIcon
-            :class="infoActive ? 'text-purple-600 dark:text-purple-400 hover:dark:text-gray-300' : 'text-gray-600'"
+            :class="infoActive ? 'text-purple-600 dark:text-purple-400' : 'text-gray-600'"
             class="h-6 w-6"
           />
         </div>
@@ -141,13 +141,10 @@ export default defineComponent({
      * @brief Display last operation
      */
     const displayOperation = () => {
-      console.log(operation.value)
-
       let num1 = previousNum.value
       let num2 = currentNum.value
       if (num1.length > 8) num1 = num1.substring(0, 8) + '...'
       if (num2.length > 8) num2 = num2.substring(0, 8) + '...'
-
       if (['add', 'subtract', 'multiply', 'divide'].includes(operation.value)) {
         const map = { add: '+', subtract: '-', multiply: '*', divide: '/' }
         operationDisplay.value = `${num1} ${(map as any)[operation.value]} ${num2} =`
@@ -186,6 +183,7 @@ export default defineComponent({
         // Prevent multiple dots in one number
         if (!currentNum.value.includes('.')) {
           if (!currentNum.value) currentNum.value = '0'
+          if (currentNum.value == '-') currentNum.value = '-0'
           currentNum.value += '.'
         }
         return
@@ -229,8 +227,18 @@ export default defineComponent({
         calcError.value = false
       }
 
+      // Handle minus in numbers
+      if ((operation.value && previousNum.value == '') || currentNum.value == '') {
+        if (op == 'subtract') {
+          currentNum.value = '-'
+          replaceCurrent.value = false
+          return
+        }
+      }
+
       // If current number is not set
       if (!currentNum.value) currentNum.value = '0'
+      if (currentNum.value == '-') currentNum.value = '-0'
 
       // Handle unary operations
       if (isUnaryOperation(op)) {
@@ -245,7 +253,6 @@ export default defineComponent({
         doCalculation(() => {
           operation.value = op
           previousNum.value = currentNum.value
-          console.log(operation.value, previousNum.value, currentNum.value)
         })
         return
       }
@@ -332,12 +339,23 @@ export default defineComponent({
       }
     }
 
+    // Prevent focus to prevent direct keyboard input to buttons
+    const onClick = () => {
+      ;(document.activeElement as any).blur()
+    }
+
     // Register event listeners
     onMounted(() => {
-      document.addEventListener('keyup', onKeyPress)
+      document.addEventListener('keydown', onKeyPress)
     })
     onUnmounted(() => {
-      document.removeEventListener('keyup', onKeyPress)
+      document.removeEventListener('keydown', onKeyPress)
+    })
+    onMounted(() => {
+      document.addEventListener('click', onClick)
+    })
+    onUnmounted(() => {
+      document.removeEventListener('click', onClick)
     })
 
     return {
