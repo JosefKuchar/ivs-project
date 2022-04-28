@@ -26,7 +26,7 @@ fn main() {
   let n = Dec::from(numbers.len());
   let mut avg = Dec::zero();
   let mut sum = Dec::zero();
-  let mut tmp = Dec::zero();
+  let mut tmp;
 
   // Standard deviation of 1 number is 0
   if n == Dec::from(1) {

@@ -83,8 +83,8 @@ pub fn pow(a: Dec, b: Dec) -> Result<Dec, String> {
 /// `a ^ (1 / b)`
 pub fn root(a: Dec, b: Dec) -> Result<Dec, String> {
   let mut ctx = Context::<Dec>::default();
-  ctx.set_min_exponent(-1);
-  ctx.set_max_exponent(1);
+  ctx.set_min_exponent(-1).unwrap();
+  ctx.set_max_exponent(1).unwrap();
   if b.exponent() != 0 || b.is_negative() {
     Err("Only root of natural numbers is supported!".to_string())
   } else if a.is_negative() && b % Dec::from(2) != Dec::from(1) {
