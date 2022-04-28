@@ -111,6 +111,7 @@ export default defineComponent({
     let operation = ref('') // Operation
     let calcError = ref(false) // If error is present
     let isResult = ref(false) // If result is currently shown
+    let replaceCurrent = ref(false)
 
     /**
      * @brief Dark mode switch handler
@@ -170,6 +171,11 @@ export default defineComponent({
     const onNumber = (num: string) => {
       middleware()
 
+      if (replaceCurrent.value) {
+        replaceCurrent.value = false
+        currentNum.value = ''
+      }
+
       if (num === '.') {
         // Prevent multiple dots in one number
         if (!currentNum.value.includes('.')) {
@@ -226,22 +232,25 @@ export default defineComponent({
 
       // If function is already set
       if (operation.value && previousNum.value) {
-        doCalculation()
-        operation.value = op
+        doCalculation(() => {
+          operation.value = op
+          previousNum.value = currentNum.value
+          console.log(operation.value, previousNum.value, currentNum.value)
+        })
         return
       }
 
       // Shift numbers
       previousNum.value = currentNum.value
+      replaceCurrent.value = true
       currentNum.value = ''
-
       operation.value = op
     }
 
     /**
      * @brief Do actual calculation (by calling to the backend via API)
      */
-    const doCalculation = () => {
+    const doCalculation = (callback?: any) => {
       if (!operation.value || !previousNum.value) return
 
       invoke('math_operation', {
@@ -255,9 +264,10 @@ export default defineComponent({
           displayOperation()
           calcError.value = false
           currentNum.value = result
-          previousNum.value = ''
+          previousNum.value = result
           isResult.value = true
           operation.value = ''
+          if (callback) callback()
         })
         .catch((error) => {
           displayOperation()
