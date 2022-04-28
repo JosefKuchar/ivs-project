@@ -5,7 +5,7 @@ description = "A Tauri App"
 authors = ["you"]
 license = ""
 repository = ""
-default-run = "app"
+default-run = "calculator"
 edition = "2018"
 build = "src/build.rs"
 
@@ -29,5 +29,5 @@ name = "stddev"
 path = "src/stddev.rs"
 
 [[bin]]
-name = "app"
+name = "calculator"
 path = "src/main.rs"
