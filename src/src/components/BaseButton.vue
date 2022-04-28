@@ -2,6 +2,7 @@
   <button
     class="flex h-full cursor-pointer items-center justify-center rounded-lg p-6 font-semibold transition ease-in-out"
     :class="buttonClasses"
+    tabindex="-1"
   >
     <slot></slot>
   </button>

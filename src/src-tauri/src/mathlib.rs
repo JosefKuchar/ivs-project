@@ -112,7 +112,7 @@ pub fn root(a: Dec, b: Dec) -> Result<Dec, String> {
 /// `a!`
 pub fn factorial(a: Dec) -> Result<Dec, String> {
   let mut ctx = Context::<Dec>::default();
-  if a.exponent() != 0 || a.is_negative() {
+  if a.exponent() != 0 || a.is_negative() || a > Dec::from(20) {
     Err("Cannot calculate factorial!".to_string())
   } else {
     let b = ctx.try_into_u128(a).unwrap();
