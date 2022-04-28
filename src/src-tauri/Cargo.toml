@@ -1,11 +1,11 @@
 [package]
-name = "app"
+name = "calculator"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
-default-run = "app"
+description = "Calculator"
+authors = ["xkucha28 Josef Kuchař", "xsirov00 Matej Sirovatka", "xbenci01 Šimon Benčík", "xnecka00 Šimon Neckař"]
+license = "GPL-3.0"
+repository = "https://github.com/JosefKuchar/ivs-project"
+default-run = "calculator"
 edition = "2018"
 build = "src/build.rs"
 
@@ -29,5 +29,5 @@ name = "stddev"
 path = "src/stddev.rs"
 
 [[bin]]
-name = "app"
+name = "calculator"
 path = "src/main.rs"
