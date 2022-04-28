@@ -328,11 +328,11 @@ export default defineComponent({
         f: () => onOperation('factorial'),
         p: () => onOperation('pow'),
         r: () => onOperation('root'),
-        c: () => onOperation('cos'),
         '=': () => doCalculation(),
         Enter: () => doCalculation(),
         Backspace: () => onBackspace(),
         Delete: () => onEraseAll(),
+        c: () => onEraseAll(),
       }
       if (typeof events[e.key] === 'function') {
         events[e.key]()

@@ -1,6 +1,8 @@
 //! App frontend
 //!
 //! Documentation for all frontend components
+//!
+//! More can be seen in .vue source files
 // This module only exists to be in documentation
 #![allow(non_snake_case)]
 
@@ -18,14 +20,16 @@ mod BaseButton {
   //! Button component
   //!
   //! Used for basically all buttons
-  //!
-  //! # Props
 }
 
 mod LargeSwitch {
   //! Switch component
   //!
   //! Used for dark mode switch
+}
+
+mod InfoCard {
+  //! Info card component
   //!
-  //! # Props
+  //! Used to show basic tips and tricks
 }
